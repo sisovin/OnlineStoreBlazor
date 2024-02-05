@@ -1,0 +1,27 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+@using OnlineStoreServer
+@using OnlineStoreServer.Components
+@using OnlineStoreServer.Components.Layout
+@using OnlineStoreServer.Components.Shared
+@using OnlineStoreServer.Components.Pages.ProductPages
+@using OnlineStoreServer.Components.Pages.OtherPages
+@using OnlineStoreServer.Components.Pages.UsersPages
+
+@using OnlineStoreServer.Services
+@using OnlineStoreSharedLibrary.Models
+@using OnlineStoreSharedLibrary.Responses
+
+@inject IJSRuntime js
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+@inject HttpClient httpClient
+@inject IProductService ClientServices
+
+@inject MessageDialogService messageDialogService

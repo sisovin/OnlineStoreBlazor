@@ -1,0 +1,30 @@
+﻿@page "/about-us"
+
+@layout InnerPageLayout
+
+
+<div class="product-view">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row">
+                    <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="PageName">
+                        About Us
+                    </Microsoft.AspNetCore.Components.Sections.SectionContent>
+                    <AboutSection />                    
+                </div>
+                <!-- Related Product -->
+                <RelatedProductsSection />
+                <!-- Related Product End -->
+            </div>
+            <!-- Side Bar Start -->
+            <SideBarProductPage />
+            <!-- Side Bar End -->
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+}

@@ -1,0 +1,51 @@
+﻿
+
+    <!-- Bottom Bar Start -->
+    <div class="bottom-bar">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="logo">
+                        <a href="/">
+                            <img src="img/logo.png" alt="Logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="search">
+                        <form class="d-flex" method="post" @onsubmit="SearchProduct" @formname="search">
+                            <AntiforgeryToken></AntiforgeryToken>
+                            <input class="form-control" @bind="Filter" type="text" placeholder="Search" aria-label="Search" />
+                            <button type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="user">
+                        <a href="wishlist" class="btn wishlist">
+                            <i class="fa fa-heart"></i>
+                            <span>(0)</span>
+                        </a>
+                        <a href="cart" class="btn cart">
+                            <i class="fa fa-shopping-cart"></i>
+                            <span>(0)</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bottom Bar End -->
+
+
+
+@code {
+    public string Filter { get; set; } = string.Empty;
+    void SearchProduct()
+    {
+        if (string.IsNullOrWhiteSpace(Filter) || string.IsNullOrEmpty(Filter) || Filter.Equals(" ")) return;
+        NavigationManager.NavigateTo($"/product-list/filter/{Filter}", forceLoad: true);
+    }
+}

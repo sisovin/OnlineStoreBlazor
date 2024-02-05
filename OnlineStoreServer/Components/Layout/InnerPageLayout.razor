@@ -1,0 +1,26 @@
+﻿@inherits LayoutComponentBase
+
+@layout EStoreLayout
+
+<!-- Breadcrumb Start -->
+<BreadcrumbPage />
+<!-- Breadcrumb End -->
+<!-- Dynamic Page Start -->
+<div class="container-fluid page-header">
+    <div class="product-view page-header-inner">
+        <div class="container-fluid">
+            <h1 class="display-3 text-black animated slideInDown">
+                <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="PageName" />
+            </h1>
+            <hr />
+        </div>
+    </div>
+</div>
+<!-- Dynamic Page End -->
+
+@Body
+
+<NewslatterPage />
+<!-- Brand Start -->
+<BrandNamePage />
+<!-- Brand End -->

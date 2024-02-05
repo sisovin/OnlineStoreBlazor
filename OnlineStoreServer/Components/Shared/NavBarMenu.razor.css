@@ -1,0 +1,15 @@
+﻿.navStyle {
+    background-color: var(--cf-theme-900);
+}
+
+.navbar-nav {
+    --bs-navbar-hover-color: var(--cf-theme-400);
+}
+
+.dropdown-item {
+    color: var(--cf-theme-400);
+}
+
+.dropdown-menu {
+    background: #FF6F61 !important;
+}

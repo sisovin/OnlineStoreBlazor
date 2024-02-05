@@ -1,0 +1,48 @@
+﻿
+    <!-- Nav Bar Start -->
+    <div class="nav">
+        <div class="container-fluid">
+            <nav class="navbar navbar-expand-lg bg-dark navbar-dark navStyle" data-bs-theme="dark">
+                <a href="#" class="navbar-brand">MENU</a>
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                    <div class="navbar-nav mr-auto">
+                        <NavLink Match="NavLinkMatch.All" href="/" class="nav-item nav-link">Home</NavLink>
+                        <NavLink href="product-list" class="nav-item nav-link">Products</NavLink>
+                        <NavLink href="product-detail" class="nav-item nav-link">Product Detail</NavLink>
+                        <NavLink href="cart" class="nav-item nav-link">Cart</NavLink>
+                        <NavLink href="checkout" class="nav-item nav-link">Checkout</NavLink>
+                        <NavLink href="my-account" class="nav-item nav-link">My Account</NavLink>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">More Pages</a>
+                            <div class="dropdown-menu">
+                                <NavLink href="wishlist" class="dropdown-item">Wishlist</NavLink>
+                                <NavLink href="login" class="dropdown-item">Login & Register</NavLink>
+                                <NavLink href="contact" class="dropdown-item">Contact Us</NavLink>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="navbar-nav ml-auto">
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">User Account</a>
+                            <div class="dropdown-menu">
+                                <NavLink href="login" class="dropdown-item">Login</NavLink>
+                                <NavLink href="login" class="dropdown-item">Register</NavLink>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <!-- Nav Bar End -->
+
+
+
+
+@code {
+
+}

@@ -1,0 +1,35 @@
+﻿@page "/return-policy"
+
+
+@layout InnerPageLayout
+
+<div class="container-fluid">
+    <!-- Payment Policy Start -->
+    <div class="product-view">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-8">
+                    <ServicesSection />
+                    <div class="row">
+                        <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="PageName">
+                            Return Policy
+                        </Microsoft.AspNetCore.Components.Sections.SectionContent>
+                        <ReturnPolicySection />
+                    </div>
+                    <!-- Related Product -->
+                    <RelatedProductsSection />
+                    <!-- Related Product End -->
+                </div>
+                <!-- Side Bar Start -->
+                <SideBarProductPage />
+                <!-- Side Bar End -->
+            </div>
+        </div>
+    </div>
+    <!-- Payment Policy End -->
+</div>
+
+
+@code {
+
+}
