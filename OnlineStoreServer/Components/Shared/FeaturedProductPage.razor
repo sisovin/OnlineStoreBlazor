@@ -11,150 +11,49 @@
             </div>
         @if (ProductService.FeaturedProducts is not null)
         {
-            <div class="row align-items-center product-slider product-slider-4">
+            <div class="row align-items-center product-slider product-slider-4" autoplay="true">
                 <!--Product Item Start-->
-                @foreach (Product product in ProductService.FeaturedProducts!.OrderByDescending(x => x.DateUploaded).Take(4)!)
+                @for (int i = 0; i < ProductService.FeaturedProducts.Count(); i += 4)
                 {
-                    <div class="col-lg-3">
-                        <div class="product-item">
-                            <div class="product-title">
-                                <a href="/product-list/@product.Id">@product.Name</a>
-                                <div class="ratting">
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
+                    @foreach (Product product in ProductService.FeaturedProducts.Skip(i).Take(4))
+                    {
+                        <div class="col-lg-3">
+                            <div class="product-item">
+                                <div class="product-title">
+                                    <a href="/product-list/@product.Id">@product.Name</a>
+                                    <div class="ratting">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </div>
+                                </div>
+                                <div class="product-image">
+                                    <a href="/product-list/@product.Id">
+                                        @if (!string.IsNullOrEmpty(product.Base64Img))
+                                        {
+                                            <img src="@product.Base64Img" alt="@product.Name">
+                                        }
+                                        else if (product.Base64Img!.Count() > 0)
+                                        {
+                                            <img src="@product.Base64Img" alt="@product.Name">
+                                        }
+                                    </a>
+                                    <div class="product-action">
+                                        <a href="#"><i class="fa fa-cart-plus"></i></a>
+                                        <a href="#"><i class="fa fa-heart"></i></a>
+                                        <a href="#"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                <div class="product-price">
+                                    <h3><span>$</span>@product.Price</h3>
+                                    <a class="btn" href="/cart/@product.Id"><i class="fa fa-shopping-cart"></i>Buy Now</a>
                                 </div>
                             </div>
-                            <div class="product-image">
-                                <a href="/product-list/@product.Id">
-                                    @if (!string.IsNullOrEmpty(product.Base64Img))
-                                    {
-                                        <img src="@product.Base64Img" alt="@product.Name">
-                                    }
-                                    else if (product.Base64Img!.Count() > 0)
-                                    {
-                                        <img src="@product.Base64Img" alt="@product.Name">
-                                    }
-                                </a>
-                                <div class="product-action">
-                                    <a href="#"><i class="fa fa-cart-plus"></i></a>
-                                    <a href="#"><i class="fa fa-heart"></i></a>
-                                    <a href="#"><i class="fa fa-search"></i></a>
-                                </div>
-                            </div>
-                            <div class="product-price">
-                                <h3><span>$</span>@product.Price</h3>
-                                <a class="btn" href="/cart/@product.Id"><i class="fa fa-shopping-cart"></i>Buy Now</a>
-                            </div>
+
                         </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="product-item">
-                            <div class="product-title">
-                                <a href="/product-list/@product.Id">@product.Name</a>
-                                <div class="ratting">
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                </div>
-                            </div>
-                            <div class="product-image">
-                                <a href="/product-list/@product.Id">
-                                    @if (!string.IsNullOrEmpty(product.Base64Img))
-                                    {
-                                        <img src="@product.Base64Img" alt="@product.Name">
-                                    }
-                                    else if (product.Base64Img!.Count() > 0)
-                                    {
-                                        <img src="@product.Base64Img" alt="@product.Name">
-                                    }
-                                </a>
-                                <div class="product-action">
-                                    <a href="#"><i class="fa fa-cart-plus"></i></a>
-                                    <a href="#"><i class="fa fa-heart"></i></a>
-                                    <a href="#"><i class="fa fa-search"></i></a>
-                                </div>
-                            </div>
-                            <div class="product-price">
-                                <h3><span>$</span>@product.Price</h3>
-                                <a class="btn" href="/cart/@product.Id"><i class="fa fa-shopping-cart"></i>Buy Now</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="product-item">
-                            <div class="product-title">
-                                <a href="/product-list/@product.Id">@product.Name</a>
-                                <div class="ratting">
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                </div>
-                            </div>
-                            <div class="product-image">
-                                <a href="/product-list/@product.Id">
-                                    @if (!string.IsNullOrEmpty(product.Base64Img))
-                                    {
-                                        <img src="@product.Base64Img" alt="@product.Name">
-                                    }
-                                    else if (product.Base64Img!.Count() > 0)
-                                    {
-                                        <img src="@product.Base64Img" alt="@product.Name">
-                                    }
-                                </a>
-                                <div class="product-action">
-                                    <a href="#"><i class="fa fa-cart-plus"></i></a>
-                                    <a href="#"><i class="fa fa-heart"></i></a>
-                                    <a href="#"><i class="fa fa-search"></i></a>
-                                </div>
-                            </div>
-                            <div class="product-price">
-                                <h3><span>$</span>@product.Price</h3>
-                                <a class="btn" href="/cart/@product.Id"><i class="fa fa-shopping-cart"></i>Buy Now</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="product-item">
-                            <div class="product-title">
-                                <a href="/product-list/@product.Id">@product.Name</a>
-                                <div class="ratting">
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                </div>
-                            </div>
-                            <div class="product-image">
-                                <a href="/product-list/@product.Id">
-                                    @if (!string.IsNullOrEmpty(product.Base64Img))
-                                    {
-                                        <img src="@product.Base64Img" alt="@product.Name">
-                                    }
-                                    else if (product.Base64Img!.Count() > 0)
-                                    {
-                                        <img src="@product.Base64Img" alt="@product.Name">
-                                    }
-                                </a>
-                                <div class="product-action">
-                                    <a href="#"><i class="fa fa-cart-plus"></i></a>
-                                    <a href="#"><i class="fa fa-heart"></i></a>
-                                    <a href="#"><i class="fa fa-search"></i></a>
-                                </div>
-                            </div>
-                            <div class="product-price">
-                                <h3><span>$</span>@product.Price</h3>
-                                <a class="btn" href="/cart/@product.Id"><i class="fa fa-shopping-cart"></i>Buy Now</a>
-                            </div>
-                        </div>
-                    </div>
+                    }
                 }
                 <!--Product Item End-->
             </div>
