@@ -88,6 +88,16 @@ namespace OnlineStoreServer.Services
             return new ServiceResponse(true, null!);
         }
 
-        
+        public Product GetRandomProduct()
+        {
+            if (FeaturedProducts is null)
+                return null!;
+
+            Random RandomNumbers = new();
+            int minimumNumber = FeaturedProducts.Min(rmp => rmp.Id);
+            int maximumNumber = FeaturedProducts.Max(rmp => rmp.Id) + 1;
+            int result = RandomNumbers.Next(minimumNumber, maximumNumber);
+            return FeaturedProducts.FirstOrDefault(rmp => rmp.Id == result)!;
+        }
     }
 }

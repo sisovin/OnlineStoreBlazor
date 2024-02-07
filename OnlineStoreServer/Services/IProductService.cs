@@ -11,5 +11,6 @@ namespace OnlineStoreServer.Services
         List<Product> AllProducts { get; set; }
         List<Product> FeaturedProducts { get; set; }
         bool IsVisible { get; set; }
+        Product GetRandomProduct();
     }
 }

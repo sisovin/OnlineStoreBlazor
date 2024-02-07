@@ -3,24 +3,42 @@
 @implements IDisposable
 
 <!-- Featured Product Start -->
+@if (!ProductService.IsVisible)
+{
     <div class="featured-product product">
         <div class="container-fluid">
-            <!--Loop of FeaturedProductList-->
-            <div class="section-header">
-                <h1>Featured Product</h1>
-            </div>
-        @if (ProductService.FeaturedProducts is not null)
+        <!--Loop of FeaturedProductList-->
+        <div class="section-header">
+            <h1>Featured Product</h1>
+        </div>
+        @if (FeaturedProducts is null) return;
         {
-            <div class="row align-items-center product-slider product-slider-4" autoplay="true">
+            <div class="row align-items-center product-slider product-slider-4">
                 <!--Product Item Start-->
-                @for (int i = 0; i < ProductService.FeaturedProducts.Count(); i += 4)
+                
+                @for (int i = 0; i < FeaturedProducts.Count(); i += 4)
                 {
-                    @foreach (Product product in ProductService.FeaturedProducts.Skip(i).Take(4))
+                    @foreach (var item in FeaturedProducts.Skip(i).Take(4))
                     {
                         <div class="col-lg-3">
                             <div class="product-item">
-                                <div class="product-title">
-                                    <a href="/product-list/@product.Id">@product.Name</a>
+                                <div class="product-title" style="cursor:pointer;" @onclick="()=>ViewProduct(item)">
+                                    <a href="/product-list/@item.Id">@item.Name</a>
+                                    <sub style="font-family:'Courier New'">
+                                    @if (item.DateUploaded.AddDays(30) > DateTime.Now)
+                                    {
+                                        <span class="badge rounded-pill bg-primary fs-6">@(GetNewLabel(item.DateUploaded))</span>
+                                    }
+                                    else
+                                    {
+                            
+                                        <span class="badge rounded-pill bg-primary fs-6">@(GetNewLabel(item.DateUploaded))</span>
+                                    }
+                                        <span class="p-1 top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-family:sans serif; font-size:11px;">
+                                            @((item.Quantity - 1) > 0 ? $"{item.Quantity - 1}+" : item.Quantity)
+                                            <span class="visually-hidden">unread messages</span>
+                                        </span>
+                                    </sub>
                                     <div class="ratting">
                                         <i class="fa fa-star"></i>
                                         <i class="fa fa-star"></i>
@@ -30,14 +48,14 @@
                                     </div>
                                 </div>
                                 <div class="product-image">
-                                    <a href="/product-list/@product.Id">
-                                        @if (!string.IsNullOrEmpty(product.Base64Img))
+                                    <a href="/product-list/@item.Id">
+                                        @if (!string.IsNullOrEmpty(item.Base64Img))
                                         {
-                                            <img src="@product.Base64Img" alt="@product.Name">
+                                            <img src="@item.Base64Img" alt="@item.Name">
                                         }
-                                        else if (product.Base64Img!.Count() > 0)
+                                        else if (item.Base64Img!.Count() > 0)
                                         {
-                                            <img src="@product.Base64Img" alt="@product.Name">
+                                            <img src="@item.Base64Img" alt="@item.Name">
                                         }
                                     </a>
                                     <div class="product-action">
@@ -47,45 +65,59 @@
                                     </div>
                                 </div>
                                 <div class="product-price">
-                                    <h3><span>$</span>@product.Price</h3>
-                                    <a class="btn" href="/cart/@product.Id"><i class="fa fa-shopping-cart"></i>Buy Now</a>
+                                    <h3><p><span>$</span>@item.Price<span class="text-muted badge rounded-pill bg-light fs-6">$149</span></p></h3>
+                                    <a class="btn fw-bold" href="#"><i class="fa fa-shopping-cart"></i>Buy Now</a>
                                 </div>
                             </div>
-
                         </div>
                     }
                 }
+                
                 <!--Product Item End-->
             </div>
             <!--Edned Loop of FeaturedProductList-->
-        }
-        else
-        {
-            <div class="alert alert-info">No Featured Products available.</div>
-        }
-        </div>
     </div>
+</div>
+}
+else
+{
+    <div class="alert alert-info">No Featured Products available.</div>
+}
 <!-- Featured Product End -->
 <MessageDialog @ref="messageDialogService.messageDialog"></MessageDialog>
 
 
 
 @code {
-    List<Product>? FeaturedProductList = new();
-    protected override async Task OnInitializedAsync()
+    public int PageSize { get; set; } = 10;
+    public int Skip { get; set; } = 0;
+    public int Take { get; set; } = 10;
+
+    List<Product> FeaturedProducts = new();
+    protected async override Task OnInitializedAsync()
     {
         bool featured = true;
-        await ClientServices.GetAllProducts(featured);
-        ClientServices.ProductAction += StateHasChanged;
-        messageDialogService.Action += StateHasChanged;
+        await ProductService.GetAllProducts(featured);
+        ProductService.ProductAction += StateHasChanged;
+        LoadData();
+    }
+    private async void LoadData()
+    {
+        var getData = await SkipAndTake(Skip, Take);
+        Skip += PageSize;
+        AddToFeaturedProducts(getData);
     }
 
-    private async Task RetrieveFeaturedProducts()
+    private async Task<List<Product>> SkipAndTake(int skip, int take) => ProductService.FeaturedProducts
+               .Skip(Skip)
+               .Take(Take)
+               .ToList();
+
+
+    private void AddToFeaturedProducts(List<Product> incomingProduct)
     {
-        FeaturedProductList?.Clear();
-        bool featured = true;
-        await ClientServices.GetAllProducts(featured);
-        FeaturedProductList = ClientServices.FeaturedProducts;
+        FeaturedProducts?.Clear();
+        FeaturedProducts = incomingProduct;
     }
 
     string GetNewLabel(DateTime dataUpload)
@@ -94,27 +126,29 @@
         int productDateAfterUploaded = (DateTime.Now - dataUpload).Days;
         return productDateAfterUploaded <= maxDays ? "New" : null!;
     }
+    private async void NextButton()
+    {
+        if (Skip > ProductService.FeaturedProducts.Count()) return;
+        var getNextProducts = await SkipAndTake(Skip, Take);
+        Skip += PageSize;
+        AddToFeaturedProducts(getNextProducts);
+    }
+
+    async void PreviousButton()
+    {
+        if (Skip == 8) return;
+        var getPreviousProducts = await SkipAndTake(Skip - (PageSize * 2), Take);
+        Skip -= PageSize;
+        AddToFeaturedProducts(getPreviousProducts);
+    }
 
     void ViewProduct(Product product)
     {
-        NavigationManager.NavigateTo($"/product-list/{product.Id}");
-    }
-
-    private void DisplayResponse(ServiceResponse serviceResponse)
-    {
-        if (serviceResponse.Flag)
-            messageDialogService.messageDialog!.SetDialogValues("Success", serviceResponse.Message);
-        else
-            messageDialogService.messageDialog!.SetDialogValues("Warning", serviceResponse.Message);
-
-        messageDialogService.SetMessageDialog();
-
+        NavigationManager.NavigateTo($"/products/{product.Id}");
     }
 
     public void Dispose()
     {
-        ClientServices.ProductAction -= StateHasChanged;
-        messageDialogService.Action -= StateHasChanged;
+        ProductService.ProductAction -= StateHasChanged;
     }
-        
 }
