@@ -6,159 +6,216 @@
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="PageName">
         Product List
     </Microsoft.AspNetCore.Components.Sections.SectionContent>
-    <!-- Product List Start -->
-    <div class="product-view">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="row">
-                        <!-- Area Search, Product Sort and Product Price Range Section -->
-                        <div class="col-md-12">
-                            <div class="product-view-top">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="product-search">
-                                            <input type="email" value="Search">
-                                            <button><i class="fa fa-search"></i></button>
+    @if (!ProductService.IsVisible)
+    {
+        <!-- Product List Start -->
+        <div class="product-view">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="row">
+                            <!-- Area Search, Product Sort and Product Price Range Section -->
+                            <div class="col-md-12">
+                                <div class="product-view-top">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="product-search">
+                                                <input type="email" value="Search">
+                                                <button><i class="fa fa-search"></i></button>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="product-short">
-                                            <div class="dropdown">
-                                                <div class="dropdown-toggle" data-toggle="dropdown">Product short by</div>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a href="#" class="dropdown-item">Newest</a>
-                                                    <a href="#" class="dropdown-item">Popular</a>
-                                                    <a href="#" class="dropdown-item">Most sale</a>
+                                        <div class="col-md-4">
+                                            <div class="product-short">
+                                                <div class="dropdown">
+                                                    <div class="dropdown-toggle" data-toggle="dropdown">Product short by</div>
+                                                    <div class="dropdown-menu dropdown-menu-right">
+                                                        <a href="#" class="dropdown-item">Newest</a>
+                                                        <a href="#" class="dropdown-item">Popular</a>
+                                                        <a href="#" class="dropdown-item">Most sale</a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="product-price-range">
-                                            <div class="dropdown">
-                                                <div class="dropdown-toggle" data-toggle="dropdown">Product price range</div>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a href="#" class="dropdown-item">$0 to $50</a>
-                                                    <a href="#" class="dropdown-item">$51 to $100</a>
-                                                    <a href="#" class="dropdown-item">$101 to $150</a>
-                                                    <a href="#" class="dropdown-item">$151 to $200</a>
-                                                    <a href="#" class="dropdown-item">$201 to $250</a>
-                                                    <a href="#" class="dropdown-item">$251 to $300</a>
-                                                    <a href="#" class="dropdown-item">$301 to $350</a>
-                                                    <a href="#" class="dropdown-item">$351 to $400</a>
-                                                    <a href="#" class="dropdown-item">$401 to $450</a>
-                                                    <a href="#" class="dropdown-item">$451 to $500</a>
+                                        <div class="col-md-4">
+                                            <div class="product-price-range">
+                                                <div class="dropdown">
+                                                    <div class="dropdown-toggle" data-toggle="dropdown">Product price range</div>
+                                                    <div class="dropdown-menu dropdown-menu-right">
+                                                        <a href="#" class="dropdown-item">$0 to $50</a>
+                                                        <a href="#" class="dropdown-item">$51 to $100</a>
+                                                        <a href="#" class="dropdown-item">$101 to $150</a>
+                                                        <a href="#" class="dropdown-item">$151 to $200</a>
+                                                        <a href="#" class="dropdown-item">$201 to $250</a>
+                                                        <a href="#" class="dropdown-item">$251 to $300</a>
+                                                        <a href="#" class="dropdown-item">$301 to $350</a>
+                                                        <a href="#" class="dropdown-item">$351 to $400</a>
+                                                        <a href="#" class="dropdown-item">$401 to $450</a>
+                                                        <a href="#" class="dropdown-item">$451 to $500</a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Area Search, Product Sort and Product Price Range Section End -->
-                        <!-- Product List Section -->
-                        @if (ProductService.FeaturedProducts is not null)
-                        {
-                            <!--Product Item Start-->
-                            @for (int i = 0; i < ProductService.FeaturedProducts.Count(); i += 3)
+                            <!-- Area Search, Product Sort and Product Price Range Section End -->
+                            <!-- Product List Section -->
+                            @if (ProductLists is null) return;
+                            @foreach (Product product in ProductLists)
                             {
-                                @foreach (Product product in ProductService.FeaturedProducts.Skip(i).Take(3))
-                                {
-                                    <div class="col-md-4">
-                                        <div class="product-item">
-                                            <div class="product-title">
-                                                <a href="/product-list/@product.Id">@product.Name</a>
-                                                <div class="ratting">
-                                                    <i class="fa fa-star"></i>
-                                                    <i class="fa fa-star"></i>
-                                                    <i class="fa fa-star"></i>
-                                                    <i class="fa fa-star"></i>
-                                                    <i class="fa fa-star"></i>
-                                                </div>
-                                            </div>
-                                            <div class="product-image">
-                                                <a href="/product-list/@product.Id">
-                                                    @if (!string.IsNullOrEmpty(product.Base64Img))
-                                                    {
-                                                        <img src="@product.Base64Img" alt="@product.Name">
-                                                    }
-                                                    else if (product.Base64Img!.Count() > 0)
-                                                    {
-                                                        <img src="@product.Base64Img" alt="@product.Name">
-                                                    }
-                                                </a>
-                                                <div class="product-action">
-                                                    <a href="#"><i class="fa fa-cart-plus"></i></a>
-                                                    <a href="#"><i class="fa fa-heart"></i></a>
-                                                    <a href="#"><i class="fa fa-search"></i></a>
-                                                </div>
-                                            </div>
-                                            <div class="product-price">
-                                                <h3><span>$</span>@product.Price</h3>
-                                                <a class="btn" href="/cart/@product.Id"><i class="fa fa-shopping-cart"></i>Buy Now</a>
+                                <!-- Product Item Start -->
+                                <div class="col-md-4">
+                                    <div class="product-item">
+                                        <div class="product-title" style="cursor:pointer;" @onclick="()=>ViewProduct(product)">
+                                            <a href="/product-list/@product.Id">@product.Name</a>
+                                            <sub style="font-family:'Courier New'">
+                                                @if (product.DateUploaded.AddDays(30) > DateTime.Now)
+                                                {
+                                                    <span class="badge rounded-pill bg-primary fs-6">@(GetNewLabel(product.DateUploaded))</span>
+                                                }
+                                                else
+                                                {
+
+                                                    <span class="badge rounded-pill bg-primary fs-6">@(GetNewLabel(product.DateUploaded))</span>
+                                                }
+                                            </sub>
+                                            <div class="ratting">
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
                                             </div>
                                         </div>
+                                        <div class="product-image">
+                                            <a href="/product-list/@product.Id">
+                                                @if (!string.IsNullOrEmpty(product.Base64Img))
+                                                {
+                                                    <img src="@product.Base64Img" alt="@product.Name">
+                                                }
+                                                else if (product.Base64Img!.Count() > 0)
+                                                {
+                                                    <img src="@product.Base64Img" alt="@product.Name">
+                                                }
+                                            </a>
+                                            <div class="product-action">
+                                                <a href="#"><i class="fa fa-cart-plus"></i></a>
+                                                <a href="#"><i class="fa fa-heart"></i></a>
+                                                <a href="#"><i class="fa fa-search"></i></a>
+                                            </div>
+                                        </div>
+                                        <div class="product-price">
+                                            <h3><p><span>$</span>@product.Price<span class="text-muted badge rounded-pill bg-light fs-6">$149</span></p></h3>
+                                            <a class="btn fw-bold" href="#"><i class="fa fa-shopping-cart"></i>Buy Now</a>
+                                        </div>
                                     </div>
-                                }
+                                </div>
+                                <!-- Product Item End -->
                             }
-                            <!--Product Item End-->
-                        }
-                        else
-                        {
-                            <div class="alert alert-info">No Featured Products available.</div>
-                        }
+                            <!-- Product List Section End -->
+                        </div>
+                        <!-- Pagination Start -->
+                        <div class="col-md-12">
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                        <a class="page-link" href="@(currentPage == 1 ? "#" : "/product-list/" + (currentPage - 1))" @onclick:preventDefault @onclick="(() => PreviousPage())">Previous</a>
+                                    </li>
+                                    @for (var i = 1; i <= totalPages; i++)
+                                    {
+                                        <li class="page-item @(i == currentPage ? "active" : "")">
+                                            <a class="page-link" href="/product-list/@i" @onclick:preventDefault @onclick="(() => GoToPage(i))">@i</a>
+                                        </li>
+                                    }
+                                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                        <a class="page-link" href="@(currentPage == totalPages ? "#" : "/product-list/" + (currentPage + 1))" @onclick:preventDefault @onclick="(() => NextPage())">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <!-- Pagination End -->
                     </div>
-                    <!-- Product List Section End -->
-                    <!-- Pagination Start -->
-                    <div class="col-md-12">
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#" tabindex="-1">Previous</a>
-                                </li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">Next</a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                    <!-- Pagination Start -->
+                    <!-- Side Bar Start -->
+                    <SideBarProductPage />
+                    <!-- Side Bar End -->
                 </div>
-                <!-- Side Bar Start -->
-                <SideBarProductPage />
-                <!-- Side Bar End -->
+                <!-- Recent Products -->
+                <RecentProductPage />
+                <!-- Recent Products End -->
             </div>
-            <!-- Recent Products -->
-            <RecentProductPage />
-            <!-- Recent Products End -->
         </div>
-    </div>
-    <!-- Product List End -->
+        <!-- Product List End -->
+    }
 </div>
 <!-- Featured Product End -->
 <MessageDialog @ref="messageDialogService.messageDialog"></MessageDialog>
 
 
 @code {
+    [Parameter]
+    public int? UriPageNumber { get; set; }
+
+    public int currentPage { get; set; } = 1;
+    public int totalPages { get; set; } = 0;
+    public int PageSize { get; set; } = 9;
+
     List<Product>? ProductLists = new();
     protected override async Task OnInitializedAsync()
     {
-        bool featured = true;
-        await ClientServices.GetAllProducts(featured);
+        await LoadProducts();
         ClientServices.ProductAction += StateHasChanged;
         messageDialogService.Action += StateHasChanged;
     }
 
-    private async Task RetrieveFeaturedProducts()
+    private async Task LoadProducts()
     {
-        ProductLists?.Clear();
+        if (UriPageNumber.HasValue)
+        {
+            currentPage = UriPageNumber.Value;
+        }
+
         bool featured = true;
-        await ClientServices.GetAllProducts(featured);
-        ProductLists = ClientServices.FeaturedProducts;
+        await ProductService.GetAllProducts(featured);
+        var allProducts = ClientServices.FeaturedProducts;
+        if (allProducts is not null)
+        {
+            await InvokeAsync(async () =>
+            {
+                totalPages = (int)Math.Ceiling(allProducts.Count / (double)PageSize);
+                ProductLists = allProducts.Skip((currentPage - 1) * PageSize).Take(PageSize).ToList();
+                StateHasChanged();
+            });
+            return;
+        }
+
+        totalPages = 0;
+        ProductLists = new();
+        return;
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await LoadProducts();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await LoadProducts();
+        }
+    }
+
+    private async Task GoToPage(int page)
+    {
+        currentPage = page;
+        await LoadProducts();
+        NavigationManager.NavigateTo($"/product-list/{currentPage}", forceLoad: false);
     }
 
     string GetNewLabel(DateTime dataUpload)
@@ -170,7 +227,7 @@
 
     void ViewProduct(Product product)
     {
-        NavigationManager.NavigateTo($"/product-list/{product.Id}");
+        NavigationManager.NavigateTo($"/product-list/{currentPage}");
     }
 
     private void DisplayResponse(ServiceResponse serviceResponse)

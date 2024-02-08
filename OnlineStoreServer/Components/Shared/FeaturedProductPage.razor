@@ -7,15 +7,13 @@
 {
     <div class="featured-product product">
         <div class="container-fluid">
-        <!--Loop of FeaturedProductList-->
-        <div class="section-header">
-            <h1>Featured Product</h1>
-        </div>
-        @if (FeaturedProducts is null) return;
-        {
+            <!--Loop of FeaturedProductList-->
+            <div class="section-header">
+                <h1>Featured Product</h1>
+            </div>
+            @if (FeaturedProducts is null) return;
             <div class="row align-items-center product-slider product-slider-4">
                 <!--Product Item Start-->
-                
                 @for (int i = 0; i < FeaturedProducts.Count(); i += 4)
                 {
                     @foreach (var item in FeaturedProducts.Skip(i).Take(4))
@@ -25,15 +23,15 @@
                                 <div class="product-title" style="cursor:pointer;" @onclick="()=>ViewProduct(item)">
                                     <a href="/product-list/@item.Id">@item.Name</a>
                                     <sub style="font-family:'Courier New'">
-                                    @if (item.DateUploaded.AddDays(30) > DateTime.Now)
-                                    {
-                                        <span class="badge rounded-pill bg-primary fs-6">@(GetNewLabel(item.DateUploaded))</span>
-                                    }
-                                    else
-                                    {
-                            
-                                        <span class="badge rounded-pill bg-primary fs-6">@(GetNewLabel(item.DateUploaded))</span>
-                                    }
+                                        @if (item.DateUploaded.AddDays(30) > DateTime.Now)
+                                        {
+                                            <span class="badge rounded-pill bg-primary fs-6">@(GetNewLabel(item.DateUploaded))</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span class="badge rounded-pill bg-primary fs-6">@(GetNewLabel(item.DateUploaded))</span>
+                                        }
                                         <span class="p-1 top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-family:sans serif; font-size:11px;">
                                             @((item.Quantity - 1) > 0 ? $"{item.Quantity - 1}+" : item.Quantity)
                                             <span class="visually-hidden">unread messages</span>
@@ -72,12 +70,12 @@
                         </div>
                     }
                 }
-                
+
                 <!--Product Item End-->
             </div>
             <!--Edned Loop of FeaturedProductList-->
+        </div>
     </div>
-</div>
 }
 else
 {
@@ -89,35 +87,33 @@ else
 
 
 @code {
-    public int PageSize { get; set; } = 10;
-    public int Skip { get; set; } = 0;
-    public int Take { get; set; } = 10;
 
     List<Product> FeaturedProducts = new();
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFeaturedProducts();
+        ClientServices.ProductAction += StateHasChanged;
+        messageDialogService.Action += StateHasChanged;
+    }
+
+    private async Task LoadFeaturedProducts()
     {
         bool featured = true;
         await ProductService.GetAllProducts(featured);
-        ProductService.ProductAction += StateHasChanged;
-        LoadData();
-    }
-    private async void LoadData()
-    {
-        var getData = await SkipAndTake(Skip, Take);
-        Skip += PageSize;
-        AddToFeaturedProducts(getData);
-    }
+        var allProducts = ClientServices.FeaturedProducts;
+        if (allProducts is not null)
+        {
+            await InvokeAsync(async () =>
+            {
+                FeaturedProducts = allProducts;
+                StateHasChanged();
+            });
+            return;
+        }
 
-    private async Task<List<Product>> SkipAndTake(int skip, int take) => ProductService.FeaturedProducts
-               .Skip(Skip)
-               .Take(Take)
-               .ToList();
+        FeaturedProducts = new();
+        return;
 
-
-    private void AddToFeaturedProducts(List<Product> incomingProduct)
-    {
-        FeaturedProducts?.Clear();
-        FeaturedProducts = incomingProduct;
     }
 
     string GetNewLabel(DateTime dataUpload)
@@ -125,21 +121,6 @@ else
         int maxDays = 30;
         int productDateAfterUploaded = (DateTime.Now - dataUpload).Days;
         return productDateAfterUploaded <= maxDays ? "New" : null!;
-    }
-    private async void NextButton()
-    {
-        if (Skip > ProductService.FeaturedProducts.Count()) return;
-        var getNextProducts = await SkipAndTake(Skip, Take);
-        Skip += PageSize;
-        AddToFeaturedProducts(getNextProducts);
-    }
-
-    async void PreviousButton()
-    {
-        if (Skip == 8) return;
-        var getPreviousProducts = await SkipAndTake(Skip - (PageSize * 2), Take);
-        Skip -= PageSize;
-        AddToFeaturedProducts(getPreviousProducts);
     }
 
     void ViewProduct(Product product)
