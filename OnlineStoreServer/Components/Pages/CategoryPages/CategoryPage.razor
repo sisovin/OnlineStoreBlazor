@@ -1,0 +1,127 @@
+﻿@page "/category-list/{CategorySlug}/{categoryId:int}"
+@implements IDisposable
+
+
+    <!-- Category Start-->
+@if (CategoryService.AllCategories is not null)
+{
+<div class="category">
+    <div class="container-fluid">
+        <div class="row">
+            @for (int i = 2; i < CategoryService.AllCategories.Count() && i < 8; i++)
+            {
+                var category = CategoryService.AllCategories.ElementAt(i);
+                var linkPageSlugUrl = $"/category-list/{category.Slug}/{category.Id}";
+
+                // Start a new column for the 1st, 2nd, 3rd, and 4th categories
+                if (i % 4 == 2 || i % 4 == 0)
+                {
+                    <div class="col-md-3">
+                        <div class="@category.CategoryItemCSS">
+                            @if (!string.IsNullOrEmpty(category.ImageURL))
+                            {
+                                <img src="@category.ImageURL" alt="@category.Name">
+                            }
+                            <a href="@linkPageSlugUrl" @onclick:preventDefault @onclick="()=>CategoryClicked(category.Id)" class="category-name">
+                                <p>@category.Name</p>
+                            </a>
+                        </div>
+                    </div>
+                // End the column after the 1st, 2nd, 3rd, and 4th categories
+                }
+                else if (i % 4 == 3 || i % 4 == 1)
+                {
+                    <div class="col-md-3">
+
+                        <div class="@category.CategoryItemCSS">
+                            @if (!string.IsNullOrEmpty(category.ImageURL))
+                            {
+                                <img src="@category.ImageURL" alt="@category.Name">
+                            }
+                            <a href="@linkPageSlugUrl" @onclick:preventDefault @onclick="()=>CategoryClicked(category.Id)" class="category-name">
+                                <p>@category.Name</p>
+                            </a>
+                        </div>
+                        @if (i + 1 < CategoryService.AllCategories.Count() && i + 1 < 8)
+                        {
+                            var nextCategory = CategoryService.AllCategories.ElementAt(i + 1);
+                            var nextLinkPageSlugUrl = $"/category-list/{nextCategory.Slug}/{nextCategory.Id}";
+                            <div class="@nextCategory.CategoryItemCSS">
+                                @if (!string.IsNullOrEmpty(nextCategory.ImageURL))
+                                {
+                                    <img src="@nextCategory.ImageURL" alt="@nextCategory.Name">
+                                }
+                                <a href="@nextLinkPageSlugUrl" @onclick:preventDefault @onclick="()=>CategoryClicked(nextCategory.Id)" class="category-name">
+                                    <p>@nextCategory.Name</p>
+                                </a>
+                            </div>
+                            i++; // Skip the next category as it's already displayed
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+}
+else
+{
+    <div class="col-md-12">
+        <div class="alert alert-warning" role="alert">
+            <DisplaySpinner />
+        </div>
+    </div>
+}
+<!-- Category End-->
+
+
+@code {
+    [Parameter]
+    public string CategorySlug { get; set; }
+
+    private Category _category;
+
+    public int CategoryId { get; set; } = 0;
+    [Parameter] public EventCallback DefaultCategoryClickedEvent { get; set; }
+    [Parameter] public EventCallback<int> CategoryClickedEvent { get; set; }
+
+    
+    protected async override Task OnInitializedAsync()
+    {
+        await CategoryService.GetAllCategories();
+        CategoryService.CategoryAction += StateHasChanged;
+        if (CategorySlug is not null)
+        {
+            var category = await CategoryService.GetCategoryBySlugAsync(CategorySlug);
+            if (category is null)
+            {
+                DefaultCategoryClicked();
+                return;
+            }
+            _category = category;
+            CategorySlug = category.Slug!; // Update CategorySlug
+        }
+        else
+        {
+            _category = new Category();
+        }
+    }
+
+    private async Task CategoryClicked(int categoryId)
+    {
+        CategoryId = categoryId;
+        await CategoryClickedEvent.InvokeAsync(categoryId);
+    }
+
+    async void DefaultCategoryClicked()
+    {
+        CategoryId = 0;
+        await DefaultCategoryClickedEvent.InvokeAsync();
+    }
+
+    public void Dispose()
+    {
+        CategoryService.CategoryAction -= StateHasChanged;
+    }
+}
+

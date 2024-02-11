@@ -1,0 +1,137 @@
+﻿@page "/add-category"
+@implements IDisposable
+
+@rendermode InteractiveServer
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+            <EditForm Model="CategoryModel" method="post" OnValidSubmit="HandleSaveCategory" FormName="CategoryModel">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="Shadow card" style="border: 1px solid #656565">
+                    <div class="card-header">
+                        <h3><strong>Add Category</strong></h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            <InputText @bind-Value="CategoryModel.Name" class="form-control"></InputText>
+                            <ValidationMessage For="@(() => CategoryModel.Name)" />
+                            <div class="form-group mt-3">
+                                <label class="form-label">Slug Name</label>
+                                <InputText @bind-Value="CategoryModel.Slug" class="form-control"></InputText>
+                                <ValidationMessage For="@(() => CategoryModel.Slug)" />
+                            </div>
+                            <div class="form-group mt-3">
+                                <label class="form-label">CSS Icon</label>
+                                <InputText @bind-Value="CategoryModel.IconCSS" class="form-control"></InputText>
+                                <ValidationMessage For="@(() => CategoryModel.IconCSS)" />
+                            </div>
+                             <div class="form-group mt-3">
+                                <label class="form-label">Category Item CSS</label>
+                                <InputText @bind-Value="CategoryModel.CategoryItemCSS" class="form-control"></InputText>
+                                <ValidationMessage For="@(() => CategoryModel.CategoryItemCSS)" />
+                            </div>
+                            <div class="form-group mt-3">
+                                <label class="form-label ml-4">
+                                    <InputCheckbox @bind-Value="CategoryModel.ShowOnMenuNavBar" class="form-check-input" />
+                                     &nbsp; Show Navbar on Menu?
+                                </label>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label class="form-label @(ImageUploadMessage == ""?"" : "text-danger")">
+                                    @(ImageUploadMessage == "" ? "Upload Image" : ImageUploadMessage)
+                                </label>
+                                <InputFile class="form-control" OnChange="UploadImage"></InputFile>
+                                <ValidationMessage For="@(() => CategoryModel.ImageURL)" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="form-group mt-3">
+                            @if (messageDialogService.ShowSaveButton)
+                            {
+                                <button type="submit" class="btn btn-outline-primary"><i class="fa fa-plus"></i>Save Category</button>
+                            }
+                            <BusyButtonComponent ShowBusyButton="messageDialogService.ShowBusyButton"></BusyButtonComponent>
+                        </div>
+                    </div>
+                </div>
+             </EditForm>
+        </div>
+    </div>
+</div>
+<MessageDialog @ref="messageDialogService.messageDialog"></MessageDialog>     
+
+@code {
+    Category CategoryModel = new();
+    string ImageUploadMessage = "";
+
+    protected override void OnInitialized()
+    {
+        messageDialogService.Action += StateHasChanged;
+    }
+
+    async Task HandleSaveCategory()
+    {
+        messageDialogService.ShowSaveButton = false;
+        messageDialogService.ShowBusyButton = !messageDialogService.ShowSaveButton;
+        var (flag, message) = await CategoryService.AddCategory(CategoryModel);
+        if (flag)
+            messageDialogService.messageDialog!.SetDialogValues("success", message);
+        else
+            messageDialogService.messageDialog!.SetDialogValues("danger", message);
+
+        messageDialogService.SetMessageDialog();
+        return;
+    }
+
+    async Task UploadImage(InputFileChangeEventArgs e)
+    {
+
+        if (e.File.Name.ToLower().EndsWith(".jpg") || e.File.Name.ToLower().EndsWith(".png"))
+        {
+            try
+            {
+                var format = e.File.ContentType; // Get the actual image format from the file
+                var resizedImage = await e.File.RequestImageFileAsync(format, 300, 300);
+
+                var buffer = new byte[resizedImage.Size];
+                await resizedImage.OpenReadStream().ReadAsync(buffer);
+                var imageData = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+                ImageUploadMessage = "";
+                CategoryModel.ImageURL = imageData;
+                imageData = "";
+                ImageUploadMessage = "Image uploaded successfully!";
+            }
+            catch (Exception ex)
+            {
+                ImageUploadMessage = "Error uploading image: " + ex.Message;
+            }
+        }
+        else
+        {
+            ImageUploadMessage = "Please upload a valid image (.jpg or .png)";
+            return;
+        }
+    }
+
+    MessageDialog? messageDialog;
+    public bool ShowBusyButton { get; set; }
+    public bool ShowSaveButton { get; set; } = true;
+
+    private async void SetMessageDialog()
+    {
+        await messageDialog!.ShowMessage();
+        ShowBusyButton = false;
+        ShowSaveButton = !ShowBusyButton;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        messageDialogService.Action -= StateHasChanged;
+    }
+}
+

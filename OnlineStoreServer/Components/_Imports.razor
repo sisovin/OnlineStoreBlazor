@@ -11,6 +11,7 @@
 @using OnlineStoreServer.Components.Layout
 @using OnlineStoreServer.Components.Shared
 @using OnlineStoreServer.Components.Pages.ProductPages
+@using OnlineStoreServer.Components.Pages.CategoryPages
 @using OnlineStoreServer.Components.Pages.OtherPages
 @using OnlineStoreServer.Components.Pages.UsersPages
 
@@ -20,8 +21,10 @@
 
 @inject IJSRuntime js
 @inject IProductService ProductService
+@inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
 @inject HttpClient httpClient
 @inject IProductService ClientServices
+@inject ICategoryService ClientCategoryServices
 
 @inject MessageDialogService messageDialogService
