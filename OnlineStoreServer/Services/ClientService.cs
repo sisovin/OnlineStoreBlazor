@@ -6,16 +6,19 @@ using OnlineStoreSharedLibrary.Responses;
 
 namespace OnlineStoreServer.Services
 {
-    public class ClientService(HttpClient httpClient) : IProductService
+    public class ClientService(HttpClient httpClient) : IProductService, ICategoryService
     {
         private const string ProductBaseUrl = "api/product";
+        private const string CateogryBaseUrl = "api/category";
 
         public Action? ProductAction { get; set; }
         public List<Product> AllProducts { get; set; }
         public List<Product> FeaturedProducts { get; set; }
         
         public bool IsVisible { get; set; }
-       
+        public Action? CategoryAction { get; set; }
+        public List<Category> AllCategories { get; set; }
+
 
         // Related to Product Model Class
         public async Task<ServiceResponse> AddProduct(Product model)
@@ -78,16 +81,6 @@ namespace OnlineStoreServer.Services
             return (List<Product>?)General.DeserializeJsonStringList<Product>(result)!;
         }
 
-        // General Method
-        private static async Task<string> ReadContent(HttpResponseMessage response) => await response.Content.ReadAsStringAsync();
-        private static ServiceResponse CheckResponse(HttpResponseMessage response)
-        {
-            if (!response.IsSuccessStatusCode)
-                return new ServiceResponse(false, "Error occured. Try again later...");
-            else
-            return new ServiceResponse(true, null!);
-        }
-
         public Product GetRandomProduct()
         {
             if (FeaturedProducts is null)
@@ -99,5 +92,95 @@ namespace OnlineStoreServer.Services
             int result = RandomNumbers.Next(minimumNumber, maximumNumber);
             return FeaturedProducts.FirstOrDefault(rmp => rmp.Id == result)!;
         }
+
+        // Related to Category Model Class
+        public async Task<ServiceResponse> AddCategory(Category model)
+        {
+
+            var response = await httpClient.PostAsync(CateogryBaseUrl,
+                General.GenerateStringContent(General.SerializeObj(model)));
+
+            var result = CheckResponse(response);
+            if (!result.Flag)
+                return result;
+
+            var apiResponse = await ReadContent(response);
+
+            var data = General.DeserializeJsonString<ServiceResponse>(apiResponse);
+            if (!data.Flag) return data;
+            await ClearAndGetAllCategories();
+            return data;
+        }
+        public async Task GetAllCategories()
+        {
+            if (AllCategories is null)
+            {
+                var response = await httpClient.GetAsync($"{CateogryBaseUrl}");
+                var (flag, _) = CheckResponse(response);
+                if (!flag) return;
+
+                var result = await ReadContent(response);
+                AllCategories = (List<Category>?)General.DeserializeJsonStringList<Category>(result)!;
+                CategoryAction?.Invoke();
+            }
+        }
+        public async Task<Category[]> GetCategoriesAsync()
+        {
+            return await ExecutionOnContext(async () =>
+            {
+                // Replace this with your actual data fetching logic.
+                var categories = await FetchCategoriesFromDatabase();
+                return categories;
+            });
+        }
+        public async Task<Category?> GetCategoryBySlugAsync(string slug)
+        {
+            Category? category = null;
+            await ExecutionOnContext(async () =>
+            {
+                category = await FetchCategoryBySlugFromDatabase(slug);
+                return null!;
+            });
+            return category;
+        }
+        private async Task<Category?> ExecutionOnSlugContext(Func<Task<Category?>> query)
+        {
+            return await query();
+        }
+
+        private async Task<Category?> FetchCategoryBySlugFromDatabase(string slug)
+        {
+            await GetAllCategories();
+            var category = AllCategories.FirstOrDefault(c => c.Slug == slug);
+            return category;
+        }
+
+        private async Task<Category[]> FetchCategoriesFromDatabase()
+        {
+            await GetAllCategories();
+            AllCategories = AllCategories.ToList();
+            return AllCategories.ToArray();
+        }
+
+        private async Task<Category[]> ExecutionOnContext(Func<Task<Category[]>> query)
+        {
+            return await query();
+        }
+        private async Task ClearAndGetAllCategories()
+        {
+            AllCategories = null!;
+            await GetAllCategories();
+        }
+
+        // General Method
+        private static async Task<string> ReadContent(HttpResponseMessage response) => await response.Content.ReadAsStringAsync();
+        private static ServiceResponse CheckResponse(HttpResponseMessage response)
+        {
+            if (!response.IsSuccessStatusCode)
+                return new ServiceResponse(false, "Error occured. Try again later...");
+            else
+                return new ServiceResponse(true, null!);
+        }
+
     }
 }

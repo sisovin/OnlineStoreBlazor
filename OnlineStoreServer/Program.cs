@@ -22,10 +22,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
 // Register services at the server
 
 builder.Services.AddScoped<IProduct, ProductRepository>();
+builder.Services.AddScoped<ICategory, CategoryRepository>();
 
 // Register services at the client
 builder.Services.AddScoped(httpClient => new HttpClient { BaseAddress = new Uri("https://localhost:7003") });
 builder.Services.AddScoped<IProductService, ClientService>();
+builder.Services.AddScoped<ICategoryService, ClientService>();
 
 builder.Services.AddScoped<MessageDialogService>();
 
